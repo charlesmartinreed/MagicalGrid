@@ -42,6 +42,9 @@ class ViewController: UIViewController {
         view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan)))
     }
     
+    //MARK:- Tracking the panned cell(s)
+    var selectedCell: UIView? //optional because it begins as nil
+    
     //MARK:- Pan handler
     @objc func handlePan(gesture: UIPanGestureRecognizer) {
         //ths will change as the user pans, or drags their finger, across the view
@@ -58,8 +61,37 @@ class ViewController: UIViewController {
         
         //more efficient, uses dictionary
         let key = "\(i)|\(j)"
-        let cellView = cells[key]
-        cellView?.backgroundColor = .white
+        guard let cellView = cells[key] else { return }
+        
+        if selectedCell != cellView {
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                
+                //transform back to 1x scale
+                self.selectedCell?.layer.transform = CATransform3DIdentity
+                
+            }, completion: nil)
+        }
+        
+        selectedCell = cellView
+        
+        //brings the cellView to the forefront so we can see it being scaled
+        view.bringSubviewToFront(cellView)
+        
+        //MARK:- Animation
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+            
+            //animate the scale of the grid at that cellView location
+            cellView.layer.transform = CATransform3DMakeScale(3, 3, 3)
+        })
+        
+        if gesture.state == .ended { //when the user release's their ouch
+            UIView.animate(withDuration: 0.5, delay: 0.25, usingSpringWithDamping: 0.5, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: {
+                
+                //scale back to original, 1x scale and make it snappy
+                cellView.layer.transform = CATransform3DIdentity
+                
+            })
+        }
         
         //inefficient, for-loop version.
 //        for subview in view.subviews {
