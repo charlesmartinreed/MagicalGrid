@@ -10,12 +10,16 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    //MARK:- Cell properties
+    let numViewPerRow = 15
+    
+    var cells = [String: UIView]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         
         //MARK:- Num of boxes on screen logic
-        let numViewPerRow = 15
         let height = Int(view.frame.height) / numViewPerRow
         let width = Int(view.frame.width) / numViewPerRow
         
@@ -28,6 +32,9 @@ class ViewController: UIViewController {
                 cellView.layer.borderWidth = 0.5
                 cellView.layer.borderColor = UIColor.black.cgColor
                 view.addSubview(cellView)
+                
+                let key = "\(i)|\(j)"
+                cells[key] = cellView
             }
         }
         
@@ -39,6 +46,27 @@ class ViewController: UIViewController {
     @objc func handlePan(gesture: UIPanGestureRecognizer) {
         //ths will change as the user pans, or drags their finger, across the view
         let location = gesture.location(in: view) //returns a CGPoint
+        
+        //finding a grid box in our subview
+        let height = Int(view.frame.height) / numViewPerRow
+        let width = Int(view.frame.width) / numViewPerRow
+        
+        let i = Int(location.x) / width //the column you're in
+        let j = Int(location.y) / width //the row you're in
+        
+        print(i, j)
+        
+        //more efficient, uses dictionary
+        let key = "\(i)|\(j)"
+        let cellView = cells[key]
+        cellView?.backgroundColor = .white
+        
+        //inefficient, for-loop version.
+//        for subview in view.subviews {
+//            if subview.frame.contains(location) {
+//                subview.backgroundColor = .black
+//            }
+//        }
     }
 
     fileprivate func randomColor() -> UIColor {
