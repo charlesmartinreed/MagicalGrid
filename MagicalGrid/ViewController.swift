@@ -30,6 +30,15 @@ class ViewController: UIViewController {
                 view.addSubview(cellView)
             }
         }
+        
+        //MARK:- Gesture recognizer
+        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: #selector(handlePan)))
+    }
+    
+    //MARK:- Pan handler
+    @objc func handlePan(gesture: UIPanGestureRecognizer) {
+        //ths will change as the user pans, or drags their finger, across the view
+        let location = gesture.location(in: view) //returns a CGPoint
     }
 
     fileprivate func randomColor() -> UIColor {
